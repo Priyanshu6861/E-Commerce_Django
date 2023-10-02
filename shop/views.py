@@ -10,7 +10,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from PayTm import Checksum
-MERCHANT_KEY = 'WorldP64425807474247'
+MERCHANT_KEY = 'your merchant key'
 # Create your views here.
 def index(request):
     allProds = []
