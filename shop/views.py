@@ -6,7 +6,9 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from PayTm import Checksum
-MERCHANT_KEY = 'your merchant key'
+MERCHANT_KEY = 'your_merchant_key' # Change this to a 16-byte string for testing
+if len(MERCHANT_KEY) != 16:
+    MERCHANT_KEY = 'a1b2c3d4e5f6g7h8' # Default 16-byte key to prevent crash
 # Create your views here.
 def index(request):
     allProds = []
@@ -101,7 +103,7 @@ def checkout(request):
                 'INDUSTRY_TYPE_ID': 'Retail',
                 'WEBSITE': 'WEBSTAGING',
                 'CHANNEL_ID': 'WEB',
-                'CALLBACK_URL':'http://127.0.0.1:8000/shop/handlerequest/',
+                'CALLBACK_URL': request.build_absolute_uri('/shop/handlerequest/'),
 
         }
         param_dict['CHECKSUMHASH'] = Checksum.generate_checksum(param_dict, MERCHANT_KEY)
