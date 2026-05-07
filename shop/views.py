@@ -117,18 +117,25 @@ def handlerequest(request):
     # paytm will send you post request here
     form = request.POST
     response_dict = {}
+    checksum = None
     for i in form.keys():
         response_dict[i] = form[i]
         if i == 'CHECKSUMHASH':
             checksum = form[i]
 
-    verify = Checksum.verify_checksum(response_dict, MERCHANT_KEY, checksum)
-    if verify:
-        if response_dict['RESPCODE'] == '01':
-            print('order successful')
-        else:
-            print('order was not successful because' + response_dict['RESPMSG'])
-    return render(request, 'shop/paymentstatus.html', {'response': response_dict})
+    if checksum is None:
+        return HttpResponse("Invalid Response: Checksum missing", status=400)
+
+    try:
+        verify = Checksum.verify_checksum(response_dict, MERCHANT_KEY, checksum)
+        if verify:
+            if response_dict.get('RESPCODE') == '01':
+                print('order successful')
+            else:
+                print('order was not successful because' + response_dict.get('RESPMSG', 'Unknown error'))
+        return render(request, 'shop/paymentstatus.html', {'response': response_dict})
+    except Exception as e:
+        return HttpResponse(f"Error verifying checksum: {str(e)}", status=500)
 
 def productView(request, myid):
     product = Product.objects.filter(id=myid)
