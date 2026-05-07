@@ -1,31 +1,83 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <script>window.location = "/shop"</script>
+{% extends 'shop/base.html' %}
 
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+{% block title %}Welcome to AwesomeCart - Your Ultimate Shopping Destination{% endblock %}
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+{% block css %}
+.hero-section {
+    background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+    color: white;
+    padding: 100px 0;
+    text-align: center;
+    border-radius: 0 0 50px 50px;
+    margin-bottom: 50px;
+}
 
-    <title>Welcome To My Awesome Cart</title>
-  </head>
-  <body>
-    <div class="jumbotron">
-  <h1 class="display-4">Welcome To My Cart</h1>
-  <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
-  <hr class="my-4">
-  
-  <a class="btn btn-primary btn-lg" href="/shop" style="margin-left:500px" role="button">Go To Shop</a>
-  <a class="btn btn-primary btn-lg" href="/blog" role="button">GO To Blog</a>
+.hero-title {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    background: linear-gradient(to right, #fff, #94a3b8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: #94a3b8;
+    max-width: 700px;
+    margin: 0 auto 40px auto;
+}
+
+.feature-card {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    height: 100%;
+    border: 1px solid #e2e8f0;
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 20px;
+}
+{% endblock %}
+
+{% block body %}
+<section class="hero-section">
+    <div class="container">
+        <h1 class="hero-title">Shop Smarter, Live Better</h1>
+        <p class="hero-subtitle">Discover thousands of premium products at unbeatable prices. From the latest electronics to trending fashion, we have everything you need.</p>
+        <div class="d-flex justify-content-center">
+            <a href="/shop" class="btn btn-primary btn-lg mx-2">Start Shopping</a>
+            <a href="/blog" class="btn btn-outline-light btn-lg mx-2">Read Our Blog</a>
+        </div>
+    </div>
+</section>
+
+<div class="container mb-5">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h4>Fast Delivery</h4>
+                <p class="text-muted">Get your products delivered to your doorstep in record time with our optimized logistics.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h4>Secure Payments</h4>
+                <p class="text-muted">We use industry-standard encryption to ensure your transactions are always safe and secure.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="feature-card">
+                <div class="feature-icon">📞</div>
+                <h4>24/7 Support</h4>
+                <p class="text-muted">Our dedicated support team is always here to help you with any questions or concerns.</p>
+            </div>
+        </div>
+    </div>
 </div>
-
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
-  </body>
-</html>
+{% endblock %}
