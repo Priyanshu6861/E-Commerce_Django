@@ -17,6 +17,10 @@ env/
 venv/
 ENV/
 
+# Static files
+staticfiles/
+static/
+
 # OS metadata
 .DS_Store
 Thumbs.db
