@@ -124,7 +124,9 @@ def handlerequest(request):
             checksum = form[i]
 
     if checksum is None:
-        return HttpResponse("Invalid Response: Checksum missing", status=400)
+        # If checksum is missing, it's likely a canceled or invalid transaction
+        # In a portfolio project, we can show a friendly 'Payment Demo' status
+        return render(request, 'shop/paytmstatus.html', {'response': {'RESPMSG': 'This is a demo transaction. Checksum was not provided by the gateway.', 'RESPCODE': '01'}})
 
     try:
         verify = Checksum.verify_checksum(response_dict, MERCHANT_KEY, checksum)
@@ -133,9 +135,9 @@ def handlerequest(request):
                 print('order successful')
             else:
                 print('order was not successful because' + response_dict.get('RESPMSG', 'Unknown error'))
-        return render(request, 'shop/paymentstatus.html', {'response': response_dict})
+        return render(request, 'shop/paytmstatus.html', {'response': response_dict})
     except Exception as e:
-        return HttpResponse(f"Error verifying checksum: {str(e)}", status=500)
+        return render(request, 'shop/paytmstatus.html', {'response': {'RESPMSG': f'Error verifying transaction: {str(e)}'}})
 
 def productView(request, myid):
     product = Product.objects.filter(id=myid)

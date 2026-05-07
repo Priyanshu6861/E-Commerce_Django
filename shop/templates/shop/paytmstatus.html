@@ -1,22 +1,39 @@
 {% extends 'shop/base.html' %}
-{% block title%} My Awesome Cart Tracker{% endblock %}
+{% block title %}Order Status - SwiftCart{% endblock title %}
+
 {% block body %}
-<div class="container">
-    {{response}}
-    <div class="col my-4">
-
-        <h2>Payment status regarding your order Id {{response.ORDERID}}</h2>
-        {% if response.RESPCODE == '01' %}
-        ORDER SUCCESS
-        {% else %}
-        ORDER FAILURE
-        {% endif%}
-
+<div class="container my-5 py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 text-center">
+            <div class="card p-5 border-0 shadow-lg" style="border-radius: 24px;">
+                {% if response.RESPCODE == '01' %}
+                <div class="mb-4">
+                    <div class="display-1 text-success mb-3">✅</div>
+                    <h2 class="font-weight-bold">Order Successful!</h2>
+                </div>
+                <p class="lead text-muted mb-4">Thank you for your purchase. Your payment has been processed successfully and your order is being prepared.</p>
+                <div class="alert alert-info border-0 rounded-pill px-4 py-3 small mb-4">
+                    <strong>Message:</strong> {{response.RESPMSG}}
+                </div>
+                {% else %}
+                <div class="mb-4">
+                    <div class="display-1 text-danger mb-3">❌</div>
+                    <h2 class="font-weight-bold">Payment Unsuccessful</h2>
+                </div>
+                <p class="lead text-muted mb-4">We're sorry, but there was an issue processing your payment. Please try again or contact support if the issue persists.</p>
+                <div class="alert alert-warning border-0 rounded-pill px-4 py-3 small mb-4">
+                    <strong>Reason:</strong> {{response.RESPMSG}}
+                </div>
+                {% endif %}
+                
+                <div class="d-flex justify-content-center mt-2">
+                    <a href="/shop" class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow-sm">Continue Shopping</a>
+                </div>
+                <div class="mt-4">
+                    <a href="/shop/tracker" class="text-primary font-weight-bold">Track Your Order <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+            </div>
+        </div>
     </div>
-
 </div>
-{% endblock %}
-{% block js %}
-<script>
-</script>
 {% endblock %}
