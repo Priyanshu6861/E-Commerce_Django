@@ -79,7 +79,7 @@
         <!-- Product Info -->
         <div class="col-lg-7 pl-lg-5">
             <span class="category-badge">{{product.category}}</span>
-            <h1 class="display-4 font-weight-bold mb-3">{{product.product_name}}</h1>
+            <h1 class="display-4 font-weight-bold mb-3" id="namepr{{product.id}}">{{product.product_name}}</h1>
             
             <div class="d-flex align-items-center mb-4">
                 <div class="text-warning mr-3">
@@ -105,9 +105,9 @@
                         <i class="fas fa-shopping-cart mr-2"></i> Add to Cart
                     </button>
                 </div>
-                <a href="/shop/checkout" class="btn btn-dark btn-block shadow-sm" style="background: var(--dark);">
+                <button onclick="buyNow('pr{{product.id}}')" class="btn btn-dark btn-block shadow-sm" style="background: var(--dark);">
                     Buy It Now
-                </a>
+                </button>
             </div>
 
             <div class="mt-5 pt-4 border-top">
@@ -136,10 +136,15 @@
     </div>
 </div>
 
-<!-- Hidden elements for cart JS compatibility -->
-<span id="namepr{{product.id}}" style="display:none;">{{product.product_name}}</span>
+<script>
+    function buyNow(id) {
+        if (!cart[id]) {
+            const name = document.getElementById('name' + id).innerText;
+            const price = parseInt(document.getElementById('price' + id).innerText);
+            cart[id] = [1, name, price];
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+        window.location.href = "/shop/checkout";
+    }
+</script>
 {% endblock body %}
-
-{% block js %}
-<!-- No extra JS needed as base.html handles everything via the .cart class and ID system -->
-{% endblock js %}
