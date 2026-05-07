@@ -1,9 +1,5 @@
-import email
 import json
-from math import ceil, prod
-from turtle import update
-from unicodedata import category, name
-from urllib import response
+from math import ceil
 from django.shortcuts import render
 from .models import OrderUpdate, Product, Contact, Order
 from django.http import HttpResponse

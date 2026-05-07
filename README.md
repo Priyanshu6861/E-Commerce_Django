@@ -129,6 +129,29 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
+---
+
+## 🚀 Render Deployment
+
+This project is configured for easy deployment on [Render](https://render.com/).
+
+### 1. Create a New Web Service
+- Connect your GitHub repository to Render.
+- Select **Python** as the runtime.
+
+### 2. Configure Settings
+- **Build Command**: `./build.sh`
+- **Start Command**: `gunicorn mac.wsgi:application`
+
+### 3. Environment Variables
+Add the following environment variables in the Render dashboard:
+- `SECRET_KEY`: A long random string for production security.
+- `DEBUG`: `False`
+- `DATABASE_URL`: (Optional) Your PostgreSQL database URL. If not provided, SQLite will be used (data will not persist on restarts).
+- `PYTHON_VERSION`: `3.10.12`
+
+---
+
 ## 👨‍💻 Author
 **Priyanshu**
 - GitHub: [@Priyanshu6861](https://github.com/Priyanshu6861)
