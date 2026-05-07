@@ -1,3 +1,4 @@
+{% load static %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -6,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Favicon -->
-    {% load static %}
     <link rel="icon" type="image/svg+xml" href="{% static 'shop/favicon.svg' %}">
     <link rel="apple-touch-icon" href="{% static 'shop/favicon.svg' %}">
 
@@ -274,7 +274,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-lg">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="/">
-                <img src="{% static 'shop/favicon.svg' %}" width="35" height="35" class="mr-2" alt="SwiftCart Logo">
+                <img src="{% static 'shop/favicon.svg' %}" width="35" height="35" class="mr-2" alt="S" onerror="this.style.display='none'">
                 <span style="color: var(--primary); font-weight: 800; letter-spacing: -1px;">Swift</span><span style="font-weight: 400; color: white;">Cart</span>
             </a>
             
