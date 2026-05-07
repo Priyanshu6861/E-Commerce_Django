@@ -5,8 +5,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Google Fonts -->
+    <!-- Favicon -->
+    {% load static %}
+    <link rel="icon" type="image/svg+xml" href="{% static 'shop/favicon.svg' %}">
+    <link rel="apple-touch-icon" href="{% static 'shop/favicon.svg' %}">
+
+    <!-- Google Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
@@ -23,8 +29,6 @@
             --text-main: #1e293b;
             --text-muted: #64748b;
             --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.3);
             --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -33,6 +37,7 @@
             background-color: var(--gray-100);
             color: var(--text-main);
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
         h1, h2, h3, h4, .navbar-brand {
@@ -41,15 +46,22 @@
             letter-spacing: -0.02em;
         }
 
+        /* Navbar Styling */
         .navbar {
-            background-color: rgba(15, 23, 42, 0.9) !important;
+            background-color: rgba(15, 23, 42, 0.95) !important;
             backdrop-filter: blur(10px);
-            padding: 1rem 0;
+            padding: 0.8rem 0;
             border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: var(--transition);
         }
 
         .navbar-brand {
             font-size: 1.6rem;
+            transition: var(--transition);
+        }
+
+        .navbar-brand:hover {
+            transform: scale(1.05);
         }
 
         .nav-link {
@@ -57,6 +69,7 @@
             color: rgba(255,255,255,0.8) !important;
             transition: var(--transition);
             position: relative;
+            padding: 0.5rem 1rem !important;
         }
 
         .nav-link::after {
@@ -64,65 +77,165 @@
             position: absolute;
             width: 0;
             height: 2px;
-            bottom: 0;
+            bottom: 5px;
             left: 50%;
             background-color: var(--primary);
             transition: var(--transition);
             transform: translateX(-50%);
         }
 
-        .nav-link:hover::after {
-            width: 70%;
+        .nav-link:hover::after, .nav-item.active .nav-link::after {
+            width: 60%;
         }
 
+        .nav-link:hover {
+            color: white !important;
+        }
+
+        /* Cart Drawer Styling */
+        .cart-drawer {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+            z-index: 1060;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-drawer.open {
+            right: 0;
+        }
+
+        .cart-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--dark);
+            color: white;
+        }
+
+        .cart-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .cart-footer {
+            padding: 20px;
+            border-top: 1px solid var(--gray-200);
+            background: var(--light);
+        }
+
+        .cart-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1050;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .cart-overlay.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .cart-item-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-right: 15px;
+            background: var(--gray-100);
+        }
+
+        .cart-item-info {
+            flex-grow: 1;
+        }
+
+        .cart-item-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 2px;
+            color: var(--dark);
+        }
+
+        .cart-item-price {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .cart-qty-control {
+            display: flex;
+            align-items: center;
+            background: var(--gray-100);
+            border-radius: 8px;
+            padding: 2px;
+        }
+
+        .cart-qty-btn {
+            border: none;
+            background: transparent;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .cart-qty-btn:hover {
+            color: var(--primary);
+        }
+
+        /* Buttons & Utility */
         .btn-primary {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
             border: none;
             border-radius: 12px;
+            padding: 10px 24px;
+            font-weight: 600;
             box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4);
-        }
-
-        .card {
-            border: 1px solid var(--gray-200);
-            border-radius: 20px;
-            background: white;
-            box-shadow: var(--card-shadow);
             transition: var(--transition);
         }
 
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4);
         }
 
-        .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
+        .rounded-pill-custom {
+            border-radius: 50px;
         }
 
-        .section-padding {
-            padding: 80px 0;
-        }
-
-        .popover {
-            border: none;
-            border-radius: 16px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            background: white;
-            padding: 10px;
-        }
-
-        .popover-header {
-            background: transparent;
-            border-bottom: 1px solid var(--gray-200);
-            font-weight: 700;
-            padding: 1rem;
-        }
-
-        .popover-body {
-            padding: 1rem;
+        @media (max-width: 576px) {
+            .cart-drawer {
+                width: 100%;
+                right: -100%;
+            }
         }
 
         {% block css %} {% endblock css %}
@@ -130,194 +243,266 @@
   </head>
   <body>
   
+    <!-- Cart Drawer -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-header">
+            <h4 class="mb-0"><i class="fas fa-shopping-bag mr-2"></i> Your Cart</h4>
+            <button class="btn btn-link text-white p-0" id="closeCart"><i class="fas fa-times fa-lg"></i></button>
+        </div>
+        <div class="cart-body" id="cartItemsContainer">
+            <!-- Dynamic Cart Items -->
+            <div class="text-center py-5" id="emptyCartMsg">
+                <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Your cart is empty</p>
+                <a href="/shop" class="btn btn-outline-primary btn-sm rounded-pill mt-2">Start Shopping</a>
+            </div>
+        </div>
+        <div class="cart-footer" id="cartFooter">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="font-weight-600 text-muted">Subtotal</span>
+                <span class="h5 mb-0 font-weight-700 text-primary">$<span id="cartSubtotal">0</span></span>
+            </div>
+            <a href="/shop/checkout" class="btn btn-primary btn-block py-3 rounded-pill shadow-sm">
+                Proceed to Checkout <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+            <button class="btn btn-link btn-sm btn-block text-danger mt-2" onclick="clearCart()">Clear All Items</button>
+        </div>
+    </div>
+
+    <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-lg">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="/">
-                <span class="mr-2" style="font-size: 1.8rem; filter: drop-shadow(0 0 8px var(--primary));">🛒</span>
+                <img src="{% static 'shop/favicon.svg' %}" width="35" height="35" class="mr-2" alt="SwiftCart Logo">
                 <span style="color: var(--primary); font-weight: 800; letter-spacing: -1px;">Swift</span><span style="font-weight: 400; color: white;">Cart</span>
             </a>
-            <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
+            
+            <div class="d-flex align-items-center order-lg-last">
+                <button type="button" class="btn btn-primary rounded-pill-custom shadow-sm ml-lg-3 px-3 px-md-4" id="cartTrigger">
+                    <i class="fas fa-shopping-cart mr-2"></i><span id="cartCount">0</span> <span class="d-none d-md-inline">Items</span>
+                </button>
+                <button class="navbar-toggler border-0 ml-2" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
           
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav mx-auto">
-                <li class="nav-item">
-                  <a class="nav-link px-3" href="/">Home</a>
+                <li class="nav-item {% if request.path == '/' %}active{% endif %}">
+                  <a class="nav-link" href="/">Home</a>
                 </li>
-                <li class="nav-item">
-                  <a class="nav-link px-3" href="/shop">Shop</a>
+                <li class="nav-item {% if '/shop' in request.path %}active{% endif %}">
+                  <a class="nav-link" href="/shop">Shop</a>
                 </li>
-                <li class="nav-item">
-                  <a class="nav-link px-3" href="/blog">Blog</a>
+                <li class="nav-item {% if '/blog' in request.path %}active{% endif %}">
+                  <a class="nav-link" href="/blog">Blog</a>
                 </li>
-                <li class="nav-item">
-                  <a class="nav-link px-3" href="/shop/tracker">Track Order</a>
-                </li>
-                <li class="nav-item d-lg-none">
-                  <a class="nav-link px-3" href="/shop/about">About</a>
-                </li>
-                <li class="nav-item d-lg-none">
-                  <a class="nav-link px-3" href="/shop/contact">Contact</a>
+                <li class="nav-item {% if '/tracker' in request.path %}active{% endif %}">
+                  <a class="nav-link" href="/shop/tracker">Track Order</a>
                 </li>
               </ul>
-              <div class="d-flex align-items-center">
-                <form method="get" action="/shop/search/" class="form-inline my-2 my-lg-0 mr-2 position-relative">
-                    <input class="form-control mr-sm-2 bg-dark border-secondary text-white rounded-pill px-4" name="search" id="search" type="search" placeholder="Search for items..." aria-label="Search" style="width: 250px; font-size: 0.9rem;">
-                </form>
-                <button type="button" class="btn btn-primary rounded-pill shadow-sm ml-2 px-4" id="popcart" data-container="body" data-html="true" data-toggle="popover" data-placement="bottom" data-content="Your cart is empty.">
-                    <span id="cart">0</span> items
-                </button>
-              </div>
+              <form method="get" action="/shop/search/" class="form-inline my-2 my-lg-0 mr-lg-2 d-none d-xl-flex">
+                  <div class="input-group">
+                      <input class="form-control bg-dark border-secondary text-white rounded-pill-custom px-4" name="search" type="search" placeholder="Search products..." style="width: 200px; font-size: 0.85rem;">
+                  </div>
+              </form>
             </div>
         </div>
       </nav>
+
     {% block body %} {% endblock %}
 
+    <!-- Footer -->
     <footer class="bg-dark text-white pt-5 pb-4 mt-5">
-        <div class="container text-center text-md-left">
-            <div class="row text-center text-md-left">
-                <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-                    <h5 class="text-uppercase mb-4 font-weight-bold" style="color: var(--primary);">AwesomeCart</h5>
-                    <p>Your one-stop destination for premium products at unbeatable prices. Quality and trust, delivered to your door.</p>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="text-uppercase mb-4 font-weight-bold" style="color: var(--primary);">SwiftCart</h5>
+                    <p class="text-muted small">Your one-stop destination for premium products at unbeatable prices. Quality and trust, delivered to your door.</p>
+                    <div class="mt-4">
+                        <a href="#" class="text-white mr-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white mr-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white mr-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
                 </div>
-                <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
-                    <h5 class="text-uppercase mb-4 font-weight-bold">Newsletter</h5>
-                    <p>Subscribe to get the latest updates and special offers.</p>
-                    <form class="input-group">
-                        <input type="email" class="form-control bg-transparent border-secondary text-white" placeholder="Enter email" aria-label="Email" required>
+                <div class="col-md-2 mb-4">
+                    <h6 class="text-uppercase font-weight-bold mb-4">Quick Links</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="/shop" class="text-muted">Products</a></li>
+                        <li class="mb-2"><a href="/shop/about" class="text-muted">About Us</a></li>
+                        <li class="mb-2"><a href="/shop/contact" class="text-muted">Contact</a></li>
+                        <li class="mb-2"><a href="/blog" class="text-muted">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6 class="text-uppercase font-weight-bold mb-4">Newsletter</h6>
+                    <p class="text-muted small">Get the latest updates and special offers.</p>
+                    <form class="input-group mt-3">
+                        <input type="email" class="form-control bg-dark border-secondary text-white small" placeholder="Email" style="border-radius: 8px 0 0 8px;">
                         <div class="input-group-append">
-                            <button class="btn btn-primary" type="button">Join</button>
+                            <button class="btn btn-primary btn-sm" type="button">Join</button>
                         </div>
                     </form>
                 </div>
-                <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3 text-center">
-                    <h5 class="text-uppercase mb-4 font-weight-bold">Trust & Safety</h5>
-                    <div class="d-flex justify-content-around">
-                        <div class="mx-2">
-                            <span style="font-size: 2rem;">💳</span>
-                            <p class="small">Secure Payment</p>
+                <div class="col-md-3 mb-4">
+                    <h6 class="text-uppercase font-weight-bold mb-4 text-center">Trust & Safety</h6>
+                    <div class="d-flex justify-content-around text-center">
+                        <div>
+                            <i class="fas fa-shield-alt fa-2x text-primary mb-2"></i>
+                            <p class="small mb-0">Secure</p>
                         </div>
-                        <div class="mx-2">
-                            <span style="font-size: 2rem;">🚚</span>
-                            <p class="small">Tracked Shipping</p>
+                        <div>
+                            <i class="fas fa-truck fa-2x text-primary mb-2"></i>
+                            <p class="small mb-0">Tracked</p>
                         </div>
-                        <div class="mx-2">
-                            <span style="font-size: 2rem;">🌟</span>
-                            <p class="small">Top Quality</p>
+                        <div>
+                            <i class="fas fa-star fa-2x text-primary mb-2"></i>
+                            <p class="small mb-0">Top Rated</p>
                         </div>
                     </div>
                 </div>
             </div>
-            <hr class="mb-4 bg-secondary">
+            <hr class="mt-4 mb-4" style="background: rgba(255,255,255,0.1);">
             <div class="row align-items-center">
-                <div class="col-md-7 col-lg-8">
-                    <p> &copy; 2026 Copyright: <a href="#" style="text-decoration: none;"><strong style="color: var(--primary);">AwesomeCart</strong></a></p>
+                <div class="col-md-12 text-center">
+                    <p class="small text-muted mb-0"> &copy; 2026 SwiftCart. All Rights Reserved. Crafted for Professional Portfolio.</p>
                 </div>
             </div>
         </div>
     </footer>
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script
-    src="https://code.jquery.com/jquery-3.6.0.js"
-    integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
-    crossorigin="anonymous"></script>
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    
     {% block js %}
     <script>
-        // Find out cart items from localStorage
-        if (localStorage.getItem('cart') == null) {
-            var cart = {};
-        } else {
-            cart = JSON.parse(localStorage.getItem('cart'));
-            updateCart(cart);
-        }
+        // --- Cart Drawer Logic ---
+        const cartDrawer = document.getElementById('cartDrawer');
+        const cartOverlay = document.getElementById('cartOverlay');
+        const cartTrigger = document.getElementById('cartTrigger');
+        const closeCart = document.getElementById('closeCart');
 
-        // If the add to cart button is clicked, add the item
-        $('.divpr').on('click', 'button.cart', function() {
-            var idstr = this.id.toString();
-            if (cart[idstr] != undefined) {
-                qty = cart[idstr][0] + 1;
+        const toggleCart = (open) => {
+            if (open) {
+                cartDrawer.classList.add('open');
+                cartOverlay.classList.add('show');
+                document.body.style.overflow = 'hidden';
             } else {
-                qty = 1;
-                name = document.getElementById('name' + idstr).innerHTML;
-                price = document.getElementById('price' + idstr).innerHTML;
-                cart[idstr] = [qty, name, parseInt(price)];
+                cartDrawer.classList.remove('open');
+                cartOverlay.classList.remove('show');
+                document.body.style.overflow = 'auto';
             }
-            updateCart(cart);
-        });
+        };
 
-        // Add popover to cart
-        $('#popcart').popover();
+        cartTrigger.addEventListener('click', () => toggleCart(true));
+        closeCart.addEventListener('click', () => toggleCart(false));
+        cartOverlay.addEventListener('click', () => toggleCart(false));
 
-        function updatePopover(cart) {
-            var popStr = "";
-            popStr = popStr + "<h5>Items in your cart</h5><div class='mx-2 my-3'>";
-            var i = 1;
-            for (var item in cart) {
-                var nameElem = document.getElementById('name' + item);
-                if (nameElem) {
-                    popStr = popStr + "<b>" + i + ". </b>";
-                    popStr = popStr + nameElem.innerHTML.slice(0, 20) + "... Qty: " + cart[item][0] + '<br>';
-                    i = i + 1;
-                }
-            }
-            popStr = popStr + "</div> <a href='/shop/checkout'><button id='Checkout' class='btn btn-primary btn-sm mb-2'>Checkout</button></a> <button id='clearCart' onclick='clearCart()' class='btn btn-outline-danger btn-sm mx-2 mb-2'>Clear</button>"
-            document.getElementById('popcart').setAttribute('data-content', popStr);
-            $('#popcart').popover('show');
-        }
+        // --- Cart Core Logic ---
+        let cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {};
+        
+        const updateCartUI = () => {
+            const container = document.getElementById('cartItemsContainer');
+            const footer = document.getElementById('cartFooter');
+            const emptyMsg = document.getElementById('emptyCartMsg');
+            const cartCount = document.getElementById('cartCount');
+            const subtotalElem = document.getElementById('cartSubtotal');
+            
+            container.querySelectorAll('.cart-item').forEach(e => e.remove());
+            
+            let totalItems = 0;
+            let subtotal = 0;
+            const items = Object.entries(cart);
 
-        function clearCart() {
-            cart = JSON.parse(localStorage.getItem('cart'));
-            for (var item in cart) {
-                var divElem = document.getElementById('div' + item);
-                if (divElem) {
-                    divElem.innerHTML = '<button id="' + item + '" class="btn btn-primary btn-block cart">Add to Cart</button>';
-                }
-            }
-            localStorage.clear();
-            cart = {};
-            updateCart(cart);
-        }
-
-        function updateCart(cart) {
-            var sum = 0;
-            for (var item in cart) {
-                sum = sum + cart[item][0];
-                var divElem = document.getElementById('div' + item);
-                if (divElem) {
-                    divElem.innerHTML = "<button id='minus" + item + "' class='btn btn-primary btn-sm minus'>-</button> <span id='val" + item + "''>" + cart[item][0] + "</span> <button id='plus" + item + "' class='btn btn-primary btn-sm plus'> + </button>";
-                }
+            if (items.length === 0) {
+                emptyMsg.style.display = 'block';
+                footer.style.display = 'none';
+                cartCount.innerText = '0';
+                subtotalElem.innerText = '0';
+            } else {
+                emptyMsg.style.display = 'none';
+                footer.style.display = 'block';
+                
+                items.forEach(([id, [qty, name, price]]) => {
+                    totalItems += qty;
+                    subtotal += qty * price;
+                    
+                    const itemHtml = `
+                        <div class="cart-item" id="drawer-${id}">
+                            <div class="cart-item-info">
+                                <div class="cart-item-title">${name}</div>
+                                <div class="cart-item-price">$${price}</div>
+                                <div class="mt-2 d-flex justify-content-between align-items-center">
+                                    <div class="cart-qty-control">
+                                        <button class="cart-qty-btn" onclick="updateQty('${id}', -1)"><i class="fas fa-minus fa-xs"></i></button>
+                                        <span class="mx-3 font-weight-bold small">${qty}</span>
+                                        <button class="cart-qty-btn" onclick="updateQty('${id}', 1)"><i class="fas fa-plus fa-xs"></i></button>
+                                    </div>
+                                    <button class="btn btn-link btn-sm text-danger p-0" onclick="removeItem('${id}')"><i class="fas fa-trash-alt"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.insertAdjacentHTML('beforeend', itemHtml);
+                    
+                    // Also update any in-page quantity buttons if they exist (on Shop page)
+                    const inPageDiv = document.getElementById('div' + id);
+                    if (inPageDiv) {
+                        inPageDiv.innerHTML = `<button onclick="updateQty('${id}', -1)" class="btn btn-primary btn-sm minus">-</button> <span class="mx-2 font-weight-bold">${qty}</span> <button onclick="updateQty('${id}', 1)" class="btn btn-primary btn-sm plus">+</button>`;
+                    }
+                });
+                
+                cartCount.innerText = totalItems;
+                subtotalElem.innerText = subtotal;
             }
             localStorage.setItem('cart', JSON.stringify(cart));
-            var cartElem = document.getElementById('cart');
-            if (cartElem) cartElem.innerHTML = sum;
-            updatePopover(cart);
-        }
+        };
 
-        // For Minus And Plus button
-        $('.divpr').on("click", "button.minus", function() {
-            a = this.id.slice(7, );
-            cart['pr' + a][0] = cart['pr' + a][0] - 1;
-            cart['pr' + a][0] = Math.max(0, cart['pr' + a][0]);
-            if (cart['pr' + a][0] == 0) {
-                document.getElementById('divpr' + a).innerHTML = '<button id="pr' + a + '" class="btn btn-primary btn-block cart">Add to Cart</button>';
-                delete cart['pr' + a];
-            } else {
-                document.getElementById('valpr' + a).innerHTML = cart['pr' + a][0];
+        window.updateQty = (id, delta) => {
+            if (cart[id]) {
+                cart[id][0] += delta;
+                if (cart[id][0] <= 0) {
+                    delete cart[id];
+                    const inPageDiv = document.getElementById('div' + id);
+                    if (inPageDiv) inPageDiv.innerHTML = `<button id="${id}" class="btn btn-primary btn-block cart rounded-pill shadow-sm">Add to Cart</button>`;
+                }
+                updateCartUI();
             }
-            updateCart(cart);
+        };
+
+        window.removeItem = (id) => {
+            delete cart[id];
+            const inPageDiv = document.getElementById('div' + id);
+            if (inPageDiv) inPageDiv.innerHTML = `<button id="${id}" class="btn btn-primary btn-block cart rounded-pill shadow-sm">Add to Cart</button>`;
+            updateCartUI();
+        };
+
+        window.clearCart = () => {
+            Object.keys(cart).forEach(id => {
+                const inPageDiv = document.getElementById('div' + id);
+                if (inPageDiv) inPageDiv.innerHTML = `<button id="${id}" class="btn btn-primary btn-block cart rounded-pill shadow-sm">Add to Cart</button>`;
+            });
+            cart = {};
+            updateCartUI();
+            toggleCart(false);
+        };
+
+        // Event delegation for in-page "Add to Cart" buttons
+        $(document).on('click', 'button.cart', function() {
+            const id = this.id;
+            const name = document.getElementById('name' + id).innerText;
+            const price = parseInt(document.getElementById('price' + id).innerText);
+            cart[id] = [1, name, price];
+            updateCartUI();
+            toggleCart(true); // Open drawer when adding
         });
 
-        $('.divpr').on("click", "button.plus", function() {
-            a = this.id.slice(6, );
-            cart['pr' + a][0] = cart['pr' + a][0] + 1;
-            document.getElementById('valpr' + a).innerHTML = cart['pr' + a][0];
-            updateCart(cart);
-        });
+        // Initialize UI
+        updateCartUI();
     </script>
     {% endblock %}
   </body>

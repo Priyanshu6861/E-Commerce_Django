@@ -6,9 +6,9 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from PayTm import Checksum
-MERCHANT_KEY = 'your_merchant_key' # Change this to a 16-byte string for testing
+MERCHANT_KEY = os.environ.get('PAYTM_MERCHANT_KEY', 'a1b2c3d4e5f6g7h8')
 if len(MERCHANT_KEY) != 16:
-    MERCHANT_KEY = 'a1b2c3d4e5f6g7h8' # Default 16-byte key to prevent crash
+    MERCHANT_KEY = 'a1b2c3d4e5f6g7h8' # Ensure 16 bytes to prevent crash
 # Create your views here.
 def index(request):
     allProds = []
@@ -95,8 +95,7 @@ def checkout(request):
         ids = order.order_id
         #return render(request, 'shop/checkout.html', {'thank':thank,'ids':ids})
         param_dict = {
-
-                'MID': 'Your-Merchant-Id-Here',
+                'MID': os.environ.get('PAYTM_MID', 'MockMerchantID123'),
                 'ORDER_ID': str(order.order_id),
                 'TXN_AMOUNT': str(amount),
                 'CUST_ID': email,
@@ -104,7 +103,6 @@ def checkout(request):
                 'WEBSITE': 'WEBSTAGING',
                 'CHANNEL_ID': 'WEB',
                 'CALLBACK_URL': request.build_absolute_uri('/shop/handlerequest/'),
-
         }
         param_dict['CHECKSUMHASH'] = Checksum.generate_checksum(param_dict, MERCHANT_KEY)
         return render(request, 'shop/paytm.html', {'param_dict': param_dict})
@@ -123,10 +121,18 @@ def handlerequest(request):
         if i == 'CHECKSUMHASH':
             checksum = form[i]
 
+    order_id = response_dict.get('ORDERID', 'Unknown')
+    
     if checksum is None:
         # If checksum is missing, it's likely a canceled or invalid transaction
         # In a portfolio project, we can show a friendly 'Payment Demo' status
-        return render(request, 'shop/paytmstatus.html', {'response': {'RESPMSG': 'This is a demo transaction. Checksum was not provided by the gateway.', 'RESPCODE': '01'}})
+        return render(request, 'shop/paytmstatus.html', {
+            'response': {
+                'RESPMSG': 'This is a demo transaction. Checksum was not provided by the gateway.', 
+                'RESPCODE': '01',
+                'ORDERID': order_id
+            }
+        })
 
     try:
         verify = Checksum.verify_checksum(response_dict, MERCHANT_KEY, checksum)
@@ -137,7 +143,12 @@ def handlerequest(request):
                 print('order was not successful because' + response_dict.get('RESPMSG', 'Unknown error'))
         return render(request, 'shop/paytmstatus.html', {'response': response_dict})
     except Exception as e:
-        return render(request, 'shop/paytmstatus.html', {'response': {'RESPMSG': f'Error verifying transaction: {str(e)}'}})
+        return render(request, 'shop/paytmstatus.html', {
+            'response': {
+                'RESPMSG': f'Error verifying transaction: {str(e)}',
+                'ORDERID': order_id
+            }
+        })
 
 def productView(request, myid):
     product = Product.objects.filter(id=myid)
@@ -155,17 +166,17 @@ def tracker(request):
         email = request.POST.get('email', '')
         try:
             order = Order.objects.filter(order_id=orderId)
-            if len(order)>0:
+            if len(order) > 0:
                 update = OrderUpdate.objects.filter(order_id=orderId)
                 updates = []
                 for item in update:
                     updates.append({'text': item.update_desc, 'time': item.timestamp})
-                    response = json.dumps({'status':'success','updates':updates,'items_jason': order[0].items_jason}, default=str)
+                response = json.dumps({'status': 'success', 'updates': updates, 'items_jason': order[0].items_jason}, default=str)
                 return HttpResponse(response)
             else:
-                return HttpResponse({'status':'noitem'})
+                return HttpResponse(json.dumps({'status': 'noitem'}), content_type='application/json')
         except Exception as e:
-            return HttpResponse({'status':'error'})
+            return HttpResponse(json.dumps({'status': 'error'}), content_type='application/json')
 
     return render(request, 'shop/tracker.html')
 

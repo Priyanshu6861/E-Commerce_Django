@@ -1,59 +1,145 @@
 {% extends 'shop/base.html' %}
+{% block title %}{{product.product_name}} - SwiftCart{% endblock title %}
 
-{% block title %}Product View{% endblock title %}
+{% block css %}
+.product-image-container {
+    background: white;
+    padding: 30px;
+    border-radius: 30px;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+}
+
+.product-image-container:hover {
+    transform: scale(1.02);
+}
+
+.product-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 15px;
+}
+
+.category-badge {
+    background: var(--gray-100);
+    color: var(--primary);
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.breadcrumb-custom {
+    background: transparent;
+    padding: 0;
+    margin-bottom: 30px;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "›";
+    font-size: 1.2rem;
+    color: var(--text-muted);
+}
+
+.price-display {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin: 20px 0;
+}
+
+.action-buttons .btn {
+    padding: 15px 40px;
+    font-size: 1.1rem;
+    border-radius: 15px;
+}
+{% endblock %}
 
 {% block body %}
-
 <div class="container my-5">
-<div class="row">
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-custom">
+            <li class="breadcrumb-item"><a href="/shop">Shop</a></li>
+            <li class="breadcrumb-item active text-muted" aria-current="page">{{product.category}}</li>
+        </ol>
+    </nav>
 
-        <div class="col-md-4">
-            <img src="../media/{{product.image}}" width="80%" height="100%">
+    <div class="row">
+        <!-- Product Image -->
+        <div class="col-lg-5 mb-5 mb-lg-0">
+            <div class="product-image-container text-center">
+                <img src="/media/{{product.image}}" class="product-image" alt="{{product.product_name}}">
+            </div>
         </div>
 
-        <div class="col-md-8">
+        <!-- Product Info -->
+        <div class="col-lg-7 pl-lg-5">
+            <span class="category-badge">{{product.category}}</span>
+            <h1 class="display-4 font-weight-bold mb-3">{{product.product_name}}</h1>
+            
+            <div class="d-flex align-items-center mb-4">
+                <div class="text-warning mr-3">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+                <span class="text-muted small">(124 Customer Reviews)</span>
+            </div>
 
-            <h3>{{product.product_name}}</h3>
-            <p><b>Rs.{{product.price}}</b></p><br>
-            <p>{{product.desc}}</p>
+            <div class="price-display">$<span id="pricepr{{product.id}}">{{product.price}}</span></div>
+            
+            <div class="mb-5">
+                <h5 class="font-weight-bold mb-3">Product Description</h5>
+                <p class="text-muted" style="font-size: 1.1rem; line-height: 1.8;">{{product.desc}}</p>
+            </div>
+
+            <div class="action-buttons d-flex flex-column flex-sm-row">
+                <div id="divpr{{product.id}}" class="divpr mb-3 mb-sm-0 mr-sm-3">
+                    <button id="pr{{product.id}}" class="btn btn-primary btn-block cart shadow-lg">
+                        <i class="fas fa-shopping-cart mr-2"></i> Add to Cart
+                    </button>
+                </div>
+                <a href="/shop/checkout" class="btn btn-dark btn-block shadow-sm" style="background: var(--dark);">
+                    Buy It Now
+                </a>
+            </div>
+
+            <div class="mt-5 pt-4 border-top">
+                <div class="row text-center text-sm-left">
+                    <div class="col-sm-4 mb-3 mb-sm-0">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-truck text-primary mr-3 fa-2x"></i>
+                            <div>
+                                <h6 class="mb-0 font-weight-bold">Free Shipping</h6>
+                                <p class="small text-muted mb-0">On orders over $50</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-undo text-primary mr-3 fa-2x"></i>
+                            <div>
+                                <h6 class="mb-0 font-weight-bold">Easy Returns</h6>
+                                <p class="small text-muted mb-0">30-day money back</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
     </div>
-<div class="row my-4">
-    <button class="btn btn-primary">Buy Now</button>
-    <button class="btn btn-primary mx-3">Add To Cart</button>
-</div>
 </div>
 
+<!-- Hidden elements for cart JS compatibility -->
+<span id="namepr{{product.id}}" style="display:none;">{{product.product_name}}</span>
 {% endblock body %}
 
-{% block js %}  
- <script>
-  console.log('working');
-  if(localStorage.getItem('cart') == null){
-  var cart = {};
-  }
-  else
-  {
-  cart = JSON.parse(localStorage.getItem('cart'));
-  document.getElementById('cart').innerHTML = Object.keys(cart).length;
-  }
-  $('.cart').click(function(){
-  console.log('clicked');
-  var idstr = this.id.toString();
-  console.log(idstr);
-  if (cart[idstr] !=undefined){
-  cart[idstr] = cart[idstr] + 1;
-  }
-  else
-  {
-  cart[idstr] = 1;
-  }
-  console.log(cart);
-  localStorage.setItem('cart', JSON.stringify(cart));
-  document.getElementById('cart').innerHTML = Object.keys(cart).length;
-  });
-  $('#popcart').popover();
-  document.getElementById('popcart').setAttribute('data-content', '<h6>Cart for Adding your products from page</h6>');
-  </script>
- {% endblock js %}
+{% block js %}
+<!-- No extra JS needed as base.html handles everything via the .cart class and ID system -->
+{% endblock js %}

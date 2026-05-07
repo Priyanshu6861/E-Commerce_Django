@@ -1,92 +1,161 @@
 {% extends 'shop/base.html' %}
-{% block title%} My Awesome Cart Tracker{% endblock %}
-{% block css %} 
-.rounded-pill{ width: 3%; height:100%; padding:7px; } 
-{% endblock %} 
+{% block title %}Order Tracker - SwiftCart{% endblock title %}
+
+{% block css %}
+.tracker-card {
+    background: white;
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: var(--card-shadow);
+}
+
+.status-list {
+    border-left: 3px solid var(--primary);
+    margin-left: 20px;
+    padding-left: 30px;
+    position: relative;
+}
+
+.status-item {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.status-item::before {
+    content: '';
+    position: absolute;
+    left: -42px;
+    top: 5px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border: 4px solid var(--primary);
+    border-radius: 50%;
+}
+
+.status-time {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+{% endblock %}
+
 {% block body %}
-<div class="container">
-    <div class="col my-4">
-        <h2>Enter your Order Id and Email address to track your order</h2>
-        <form method="post" action="#" id="trackerForm">{% csrf_token %}
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="inputname">Order Id</label>
-                    <input type="text" class="form-control" id="orderId" name="orderId" placeholder="Order Id">
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="inputEmail4">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="Email">
-                </div>
-                <button type="submit" class="btn btn-primary">Track Order</button>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="tracker-card mb-5">
+                <h2 class="font-weight-bold mb-4 text-center">Track Your Order</h2>
+                <p class="text-center text-muted mb-5">Enter your unique Order ID and Email address to see the current status of your package.</p>
+                
+                <form method="post" id="trackerForm" class="row">{% csrf_token %}
+                    <div class="col-md-5 mb-3">
+                        <label for="orderId" class="font-weight-600">Order ID</label>
+                        <input type="text" class="form-control rounded-pill-custom py-4 px-4" id="orderId" name="orderId" placeholder="e.g. 1001" required>
+                    </div>
+                    <div class="col-md-5 mb-3">
+                        <label for="email" class="font-weight-600">Email Address</label>
+                        <input type="email" class="form-control rounded-pill-custom py-4 px-4" id="email" name="email" placeholder="e.g. john@example.com" required>
+                    </div>
+                    <div class="col-md-2 mb-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary btn-block py-3 rounded-pill-custom">Track</button>
+                    </div>
+                </form>
             </div>
-    </div>
-    <div class="col my-4">
-        <h2>Your Order Status</h2>
-        <div class="alert alert-danger" id="items" role="alert">
-          Enter your orderId and Email to track your order.
+
+            <!-- Results Section -->
+            <div id="resultsSection" style="display: none;">
+                <div class="row">
+                    <!-- Status Timeline -->
+                    <div class="col-md-6 mb-4">
+                        <div class="tracker-card h-100">
+                            <h4 class="font-weight-bold mb-4"><i class="fas fa-shipping-fast mr-2 text-primary"></i> Shipping Status</h4>
+                            <div class="status-list" id="statusList">
+                                <!-- Status items will be injected here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Order Items -->
+                    <div class="col-md-6 mb-4">
+                        <div class="tracker-card h-100">
+                            <h4 class="font-weight-bold mb-4"><i class="fas fa-box-open mr-2 text-primary"></i> Order Items</h4>
+                            <div id="itemsList">
+                                <!-- Items will be injected here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="errorSection" class="text-center py-5" style="display: none;">
+                <div class="display-1 text-muted mb-3">🔍</div>
+                <h4 class="text-muted">No records found</h4>
+                <p class="text-muted small">Please verify your Order ID and Email and try again.</p>
+            </div>
         </div>
     </div>
-    <div class="col my-4">
-      <h2>Your Order Details</h2>
-      <div class="alert alert-success" id="citems" role="alert">
-        No Records
-    </div>
-  </div>
 </div>
 {% endblock %}
+
 {% block js %}
 <script>
 $('#trackerForm').submit(function(event) {
-    $('#items').empty();
+    event.preventDefault();
+    $('#statusList').empty();
+    $('#itemsList').empty();
+    $('#resultsSection').hide();
+    $('#errorSection').hide();
+
     var formData = {
-        'orderId': $('input[name=orderId]').val(),
-        'email': $('input[name=email]').val(),
+        'orderId': $('#orderId').val(),
+        'email': $('#email').val(),
         'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
     };
+
     $.ajax({
-            type: 'POST',
-            url: '/shop/tracker/',
-            data: formData,
-            encode: true,
-        })
-        .done(function(data) {
-            $('#citems').empty();
-            data = JSON.parse(data);
-            console.log(data);
+        type: 'POST',
+        url: '/shop/tracker/',
+        data: formData,
+        encode: true,
+    }).done(function(data) {
+        if (typeof data === 'string') data = JSON.parse(data);
+        
+        if (data['status'] == 'success') {
+            $('#resultsSection').fadeIn();
             
-            if (data['status'] == 'success') {
-                updates = data['updates'];
-                for (i = 0; i < updates.length; i++) {
-                    let text = updates[i]['text'];
-                    let time = updates[i]['time'];
-                    mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
-                    ${text}
-                    <span class="badge badge-primary badge-pill">${time}</span>
-                </li>`
-                    $('#items').append(mystr);
-                }
-                cart = JSON.parse(data['items_jason']);
-                console.log(cart);
-                for (item in cart) {
-                    let name = cart[item][1];
-                    let qty = cart[item][0];
-                    mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
-                        ${name}
-                        <span class="badge badge-primary badge-pill">${qty}</span>
-                    </li>`
-                    $('#citems').append(mystr);
-                }
-    
+            // Populate Status
+            let updates = data['updates'];
+            if (updates.length > 0) {
+                updates.forEach(update => {
+                    let html = `
+                        <div class="status-item">
+                            <div class="status-time">${update['time']}</div>
+                            <div class="font-weight-600">${update['text']}</div>
+                        </div>
+                    `;
+                    $('#statusList').append(html);
+                });
             }
-             else {
-                mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
-                    Sorry, We are not able to fetch this order id and email. Make sure to type correct order Id and email</li>`
-                    $('#items').append(mystr);
-                    $('#citems').append(mystr);
-            }
-           
-        });
-    event.preventDefault();
+
+            // Populate Items
+            let cart = JSON.parse(data['items_jason']);
+            Object.entries(cart).forEach(([id, [qty, name, price]]) => {
+                let html = `
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                        <div>
+                            <div class="font-weight-600">${name}</div>
+                            <small class="text-muted">Quantity: ${qty}</small>
+                        </div>
+                        <div class="font-weight-700 text-primary">$${price * qty}</div>
+                    </div>
+                `;
+                $('#itemsList').append(html);
+            });
+        } else {
+            $('#errorSection').fadeIn();
+        }
+    });
 });
 </script>
 {% endblock %}
