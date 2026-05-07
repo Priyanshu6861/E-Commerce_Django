@@ -64,14 +64,28 @@ def checkout(request):
     if request.method == "POST":
         items_jason = request.POST.get('items_jason','')
         name = request.POST.get('name','')
-        amount = request.POST.get('amount','')
-        email = request.POST.get('email','')
-        address = request.POST.get('address1','') + " " + request.POST.get('address2','')
-        city = request.POST.get('city','')
-        state = request.POST.get('state','')
-        zip_code = request.POST.get('zip_code','')
-        phone = request.POST.get('phone','')
-        order = Order(items_jason=items_jason, name=name, amount=amount, email=email,address=address,city=city,state=state,zip_code=zip_code, phone=phone)
+        # Safely convert to integer or default to 0
+        try:
+            amount = int(request.POST.get('amount', 0))
+        except (ValueError, TypeError):
+            amount = 0
+
+        email = request.POST.get('email', '')
+        address = request.POST.get('address1', '') + " " + request.POST.get('address2', '')
+        city = request.POST.get('city', '')
+        state = request.POST.get('state', '')
+
+        try:
+            zip_code = int(request.POST.get('zip_code', 0))
+        except (ValueError, TypeError):
+            zip_code = 0
+
+        try:
+            phone = int(request.POST.get('phone', 0))
+        except (ValueError, TypeError):
+            phone = 0
+
+        order = Order(items_jason=items_jason, name=name, amount=amount, email=email, address=address, city=city, state=state, zip_code=zip_code, phone=phone)
         order.save()
         update = OrderUpdate(order_id=order.order_id, update_desc="The order has been placed")
         update.save()
